@@ -65,22 +65,11 @@
       margin: 20px 0;
     }
 
-    .responsive-video {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      max-width: 90%;
+    audio {
       margin: 20px auto;
-    }
-
-    .responsive-video iframe {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      display: block;
+      width: 80%;
+      max-width: 500px;
     }
 
     .hearts {
@@ -127,84 +116,92 @@
   <div id="counter">Calculando...</div>
 
   <h2>🎵 Nossa música</h2>
-  <div class="responsive-video">
-    <iframe
-      src="https://www.youtube.com/embed/lp-EO5I60KA?autoplay=1"
-      title="Thinking Out Loud - Ed Sheeran"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen
-    ></iframe>
-  </div>
+  <audio controls autoplay loop>
+    <source src="sua-musica.mp3" type="audio/mpeg">
+    Seu navegador não suporta o elemento de áudio.
+  </audio>
 
   <div class="romantic-message" id="romanticMessage">💌</div>
 
   <div class="hearts">💕 💞 💖 💗 💘</div>
 
   <script>
-    // Carrossel
-    let index = 0;
-    const images = document.getElementById("carouselImages");
-    const totalImages = images.children.length;
+  // Carrossel
+  let index = 0;
+  const images = document.getElementById("carouselImages");
+  const totalImages = images.children.length;
+  let autoplayInterval;
 
-    function updateCarousel() {
-      images.style.transform = `translateX(-${index * 100}%)`;
-    }
+  function updateCarousel() {
+    images.style.transform = `translateX(-${index * 100}%)`;
+  }
 
-    function nextImage() {
+  function nextImage() {
+    index = (index + 1) % totalImages;
+    updateCarousel();
+    startCarouselAutoplay(); // reinicia o temporizador
+  }
+
+  function prevImage() {
+    index = (index - 1 + totalImages) % totalImages;
+    updateCarousel();
+    startCarouselAutoplay(); // reinicia o temporizador
+  }
+
+  function startCarouselAutoplay() {
+    clearInterval(autoplayInterval);
+    autoplayInterval = setInterval(() => {
       index = (index + 1) % totalImages;
       updateCarousel();
-    }
+    }, 4000);
+  }
 
-    function prevImage() {
-      index = (index - 1 + totalImages) % totalImages;
-      updateCarousel();
-    }
+  // Inicializa carrossel automaticamente
+  startCarouselAutoplay();
 
-    setInterval(nextImage, 4000); // autoplay
+  // Contador
+  function updateElapsedTime() {
+    const startTime = new Date('2025-05-20T19:30:00');
+    const now = new Date();
+    const diffMs = now - startTime;
 
-    // Contador
-    function updateElapsedTime() {
-      const startTime = new Date('2025-05-20T19:30:00');
-      const now = new Date();
-      const diffMs = now - startTime;
+    const seconds = Math.floor(diffMs / 1000) % 60;
+    const minutes = Math.floor(diffMs / (1000 * 60)) % 60;
+    const hours = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-      const seconds = Math.floor(diffMs / 1000) % 60;
-      const minutes = Math.floor(diffMs / (1000 * 60)) % 60;
-      const hours = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
-      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    document.getElementById("counter").innerText =
+      `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  }
 
-      document.getElementById("counter").innerText =
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }
+  setInterval(updateElapsedTime, 1000);
+  updateElapsedTime();
 
-    setInterval(updateElapsedTime, 1000);
-    updateElapsedTime();
+  // Frases Românticas
+  const messages = [
+    "Você é meu lugar favorito no mundo.",
+    "Cada segundo ao seu lado vale mais que mil vidas.",
+    "O amor que sinto por você só cresce com o tempo.",
+    "Você transforma dias comuns em memórias inesquecíveis.",
+    "Com você, tudo faz sentido. 💑",
+    "Nosso amor é meu maior presente. 💝",
+  ];
 
-    // Frases Românticas
-    const messages = [
-      "Você é meu lugar favorito no mundo.",
-      "Cada segundo ao seu lado vale mais que mil vidas.",
-      "O amor que sinto por você só cresce com o tempo.",
-      "Você transforma dias comuns em memórias inesquecíveis.",
-      "Com você, tudo faz sentido. 💑",
-      "Nosso amor é meu maior presente. 💝",
-    ];
+  let messageIndex = 0;
+  const messageEl = document.getElementById("romanticMessage");
 
-    let messageIndex = 0;
-    const messageEl = document.getElementById("romanticMessage");
+  function showNextMessage() {
+    messageEl.classList.remove('visible');
+    setTimeout(() => {
+      messageEl.innerText = messages[messageIndex];
+      messageEl.classList.add('visible');
+      messageIndex = (messageIndex + 1) % messages.length;
+    }, 500);
+  }
 
-    function showNextMessage() {
-      messageEl.classList.remove('visible');
-      setTimeout(() => {
-        messageEl.innerText = messages[messageIndex];
-        messageEl.classList.add('visible');
-        messageIndex = (messageIndex + 1) % messages.length;
-      }, 500);
-    }
-
-    setInterval(showNextMessage, 5000);
-    showNextMessage();
+  setInterval(showNextMessage, 5000);
+  showNextMessage();
   </script>
+
 </body>
 </html>
