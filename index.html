@@ -92,6 +92,20 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
     }
+
+    .romantic-message {
+      font-size: 1.5rem;
+      margin: 30px auto;
+      width: 90%;
+      max-width: 600px;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      min-height: 3em;
+    }
+
+    .romantic-message.visible {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -112,16 +126,18 @@
   <h2>⏱ Tempo juntos desde 20/05/2025 às 19:30</h2>
   <div id="counter">Calculando...</div>
 
-  <h2>🎶 Nossa música</h2>
+  <h2>🎵 Nossa música</h2>
   <div class="responsive-video">
     <iframe
-      src="https://www.youtube.com/embed/450p7goxZqg?autoplay=1"
-      title="YouTube video player"
+      src="https://www.youtube.com/embed/lp-EO5I60KA?autoplay=1"
+      title="Thinking Out Loud - Ed Sheeran"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen
     ></iframe>
   </div>
+
+  <div class="romantic-message" id="romanticMessage">💌</div>
 
   <div class="hearts">💕 💞 💖 💗 💘</div>
 
@@ -145,10 +161,9 @@
       updateCarousel();
     }
 
-    // Autoplay a cada 4 segundos
-    setInterval(nextImage, 4000);
+    setInterval(nextImage, 4000); // autoplay
 
-    // Contador desde 20/05/2025 às 19:30
+    // Contador
     function updateElapsedTime() {
       const startTime = new Date('2025-05-20T19:30:00');
       const now = new Date();
@@ -165,6 +180,31 @@
 
     setInterval(updateElapsedTime, 1000);
     updateElapsedTime();
+
+    // Frases Românticas
+    const messages = [
+      "Você é meu lugar favorito no mundo.",
+      "Cada segundo ao seu lado vale mais que mil vidas.",
+      "O amor que sinto por você só cresce com o tempo.",
+      "Você transforma dias comuns em memórias inesquecíveis.",
+      "Com você, tudo faz sentido. 💑",
+      "Nosso amor é meu maior presente. 💝",
+    ];
+
+    let messageIndex = 0;
+    const messageEl = document.getElementById("romanticMessage");
+
+    function showNextMessage() {
+      messageEl.classList.remove('visible');
+      setTimeout(() => {
+        messageEl.innerText = messages[messageIndex];
+        messageEl.classList.add('visible');
+        messageIndex = (messageIndex + 1) % messages.length;
+      }, 500);
+    }
+
+    setInterval(showNextMessage, 5000);
+    showNextMessage();
   </script>
 </body>
 </html>
