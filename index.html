@@ -19,46 +19,55 @@
       margin-top: 20px;
     }
 
+    .carousel-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 90%;
+    }
+
     .carousel {
       width: 80%;
-      max-width: 800px;
-      margin: 20px auto;
+      height: 500px; /* espaço reservado grande */
       overflow: hidden;
       border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       border: 3px solid #ff85a2;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: white;
     }
 
     .carousel-images {
       display: flex;
       transition: transform 0.5s ease-in-out;
+      height: 100%;
     }
 
     .carousel-images img {
       width: 100%;
+      height: 100%;
+      object-fit: contain;
       flex-shrink: 0;
+      background: white;
     }
 
-    .controls {
-      margin: 15px;
-    }
-
-    .controls button {
+    .side-button {
       background-color: #ff5b8c;
       color: white;
       border: none;
-      padding: 10px 20px;
-      margin: 0 10px;
-      font-size: 1rem;
-      border-radius: 30px;
+      padding: 15px 20px;
+      font-size: 1.5rem;
+      border-radius: 50%;
       cursor: pointer;
       box-shadow: 0 3px 8px rgba(0,0,0,0.2);
       transition: background 0.3s ease;
     }
 
-    .controls button:hover {
+    .side-button:hover {
       background-color: #e04e7d;
     }
+
 
     #counter {
       font-size: 2rem;
@@ -97,24 +106,41 @@
     }
   </style>
 </head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <body>
   <h1>💘 Carrossel do Amor 💘</h1>
-  <div class="carousel">
-    <div class="carousel-images" id="carouselImages">
-      <img src="images/image1.jpg" alt="Imagem 1">
-      <img src="images/image2.jpg" alt="Imagem 2">
-      <img src="images/image3.jpg" alt="Imagem 3">
-      <img src="images/image4.jpg" alt="Imagem 4">
-      <img src="images/image5.jpg" alt="Imagem 5">
-      <img src="images/image6.jpg" alt="Imagem 6">
-      <img src="images/image7.jpg" alt="Imagem 7">
+  <div class="carousel-container">
+    <button class="side-button" onclick="prevImage()">⬅</button>
+
+    <div class="carousel">
+      <div class="carousel-images" id="carouselImages">
+        <img src="images/image1.jpg" alt="Imagem 1">
+        <img src="images/image2.jpg" alt="Imagem 2">
+        <img src="images/image3.jpg" alt="Imagem 3">
+        <img src="images/image4.jpg" alt="Imagem 4">
+        <img src="images/image5.jpg" alt="Imagem 5">
+        <img src="images/image6.jpg" alt="Imagem 6">
+        <img src="images/image7.jpg" alt="Imagem 7">
+      </div>
     </div>
+
+    <button class="side-button" onclick="nextImage()">➡</button>
   </div>
 
-  <div class="controls">
-    <button onclick="prevImage()">⬅ Anterior</button>
-    <button onclick="nextImage()">Próxima ➡</button>
-  </div>
 
   <h2>⏱ Tempo juntos desde 20/05/2025 às 19:30</h2>
   <div id="counter">Calculando...</div>
