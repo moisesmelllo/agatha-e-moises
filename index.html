@@ -19,25 +19,41 @@
     body {
       font-family: 'Poppins', sans-serif;
       text-align: center;
-      background: linear-gradient(135deg, #ffd6e8, #ffe9f3);
-      background-attachment: fixed;
-      color: #6b0f1a;
+      color: #fff; /* Texto principal em branco para contrastar com fundos */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      position: relative; /* Necessário para posicionar o fundo */
+      overflow-x: hidden;
+    }
+
+    /* O FUNDO COM PAISAGENS DO UNSPLASH */
+    .background-slideshow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      /* Puxa uma foto aleatória focada em natureza/pôr do sol */
+      background: url('https://source.unsplash.com/random/1920x1080/?nature,sunset,landscape') center/cover no-repeat;
+      z-index: -1;
+      /* O filtro é crucial: escurece um pouco a foto e desfoca para não atrapalhar o conteúdo */
+      filter: brightness(0.6) blur(3px);
     }
 
     h1, h2 {
       font-family: 'Dancing Script', cursive;
       margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Sombra para leitura */
     }
 
     h1 {
       font-size: 3rem;
-      color: #e04e7d;
+      color: #ff9cbd; /* Rosa claro para destacar */
+      margin-top: 20px;
     }
 
     h2 {
@@ -60,13 +76,14 @@
       max-width: 500px;
       aspect-ratio: 4 / 5;
       border-radius: 20px;
-      border: 4px solid #ff85a2;
-      box-shadow: 0 8px 24px rgba(255, 133, 162, 0.4);
-      background: white;
+      border: 4px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.2); /* Fundo translúcido */
+      backdrop-filter: blur(8px); /* Efeito de vidro */
       position: relative;
+      overflow: hidden;
     }
 
-    /* Alteração para o efeito Fade */
     .carousel-images {
       position: relative;
       width: 100%;
@@ -81,29 +98,29 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 1s ease-in-out; /* Transição suave de opacidade */
-      border-radius: 16px; /* Borda interna para não vazar o container */
+      transition: opacity 1s ease-in-out;
+      border-radius: 16px;
     }
 
     .carousel-images img.active {
-      opacity: 1; /* Apenas a imagem ativa fica visível */
+      opacity: 1;
     }
 
     .side-button {
-      background-color: #ff5b8c;
+      background-color: rgba(255, 91, 140, 0.8);
       color: white;
-      border: none;
+      border: 2px solid white;
       width: 50px;
       height: 50px;
       font-size: 1.5rem;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 10; /* Garante que o botão fique acima das imagens */
+      z-index: 10;
     }
 
     .side-button:hover {
@@ -118,11 +135,13 @@
     #counter {
       font-size: 1.5rem;
       font-weight: 600;
-      background: rgba(255, 255, 255, 0.6);
+      color: #333;
+      background: rgba(255, 255, 255, 0.85); /* Fundo branco semi-transparente para o contador */
+      backdrop-filter: blur(5px);
       padding: 10px 20px;
       border-radius: 30px;
       margin: 10px 0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     audio {
@@ -130,12 +149,14 @@
       width: 100%;
       max-width: 400px;
       border-radius: 30px;
+      opacity: 0.9;
     }
 
     .hearts {
       font-size: 2rem;
       margin-top: 20px;
       animation: float 3s infinite ease-in-out;
+      text-shadow: 0px 0px 5px rgba(255,255,255,0.5);
     }
 
     @keyframes float {
@@ -154,7 +175,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 20px;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.4); /* Fundo escuro para a mensagem ler bem */
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
 
     .romantic-message.visible {
@@ -168,19 +192,21 @@
         font-size: 1.2rem;
       }
       h1 { font-size: 2.2rem; }
-      #counter { font-size: 1.2rem; }
+      #counter { font-size: 1.1rem; padding: 10px 15px;}
     }
   </style>
 </head>
 
 <body>
+  <!-- A div que carrega a imagem do Unsplash -->
+  <div class="background-slideshow"></div>
+
   <h1>💘 Eu te amo!!! 💘</h1>
   
   <div class="carousel-container">
     <button class="side-button" onclick="prevImage()" aria-label="Imagem anterior">⬅</button>
 
     <div class="carousel">
-      <!-- O container agora está vazio no HTML. O JS vai injetar as imagens aqui -->
       <div class="carousel-images" id="carouselImages"></div>
     </div>
 
@@ -200,9 +226,7 @@
   <div class="hearts">💕 💞 💖 💗 💘</div>
 
   <script>
-  // --- CARREGAMENTO DINÂMICO DE IMAGENS E CARROSSEL COM FADE ---
-
-  // Lista com os nomes exatos dos arquivos da sua pasta
+  // --- CARREGAMENTO DINÂMICO DE IMAGENS ---
   const fileNames = [
     "20260102_161652.jpg",
     "20260125_170953.jpg",
@@ -232,12 +256,10 @@
   ];
   
   const imagesContainer = document.getElementById("carouselImages");
-  
   let index = 0;
-  let imgElements = []; // Array para guardar as tags <img>
+  let imgElements = [];
   let autoplayInterval;
 
-  // Função para embaralhar a lista de imagens de forma aleatória
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -245,25 +267,19 @@
     }
   }
 
-  // Embaralha o array de fotos antes de começar a carregá-las
   shuffleArray(fileNames);
 
-  // Função para injetar as imagens dinamicamente baseada na lista
   function loadImages() {
     fileNames.forEach((fileName, i) => {
       const img = document.createElement("img");
-      // Monta o caminho correto: "images/nome-do-arquivo.jpg"
       img.src = `images/${fileName}`;
       img.alt = `Momento especial ${i + 1}`;
       
-      // A primeira imagem ganha a classe active
       if (i === 0) {
         img.classList.add("active");
       }
       
-      // Tratamento de erro continua caso você digite algum nome errado na lista acima
       img.onerror = function() {
-        console.warn(`Imagem ${this.src} não encontrada. Ignorando.`);
         imgElements = imgElements.filter(el => el !== this);
         this.remove();
         if(this.classList.contains('active') && imgElements.length > 0) {
@@ -277,20 +293,15 @@
     });
   }
 
-  // Função que controla a troca de imagens (o efeito Fade)
   function updateCarousel() {
-    if (imgElements.length === 0) return; // Proteção caso não tenha imagens
-
-    // Remove a classe 'active' de todas as imagens (esconde todas)
+    if (imgElements.length === 0) return;
     imgElements.forEach(img => img.classList.remove("active"));
-    
-    // Adiciona a classe 'active' apenas na imagem atual (mostra ela)
     imgElements[index].classList.add("active");
   }
 
   function nextImage() {
     if (imgElements.length === 0) return;
-    index = (index + 1) % imgElements.length; // Usa o length do array dinâmico
+    index = (index + 1) % imgElements.length;
     updateCarousel();
     startCarouselAutoplay(); 
   }
@@ -312,7 +323,6 @@
     }, 4000);
   }
 
-  // Inicializa as imagens e o timer
   loadImages();
   startCarouselAutoplay();
 
@@ -322,10 +332,7 @@
     const now = new Date();
     const diffMs = now - startTime;
 
-    // Calcula o total de dias
     const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
-    // Extrai os anos e os dias restantes
     const years = Math.floor(totalDays / 365);
     const days = totalDays % 365;
 
@@ -337,7 +344,6 @@
     const formattedMinutes = String(minutes).padStart(2, '0');
     const formattedSeconds = String(seconds).padStart(2, '0');
 
-    // Monta o texto incluindo os anos apenas se for maior que zero
     let counterText = "";
     if (years > 0) {
       counterText += years === 1 ? "1 ano, " : `${years} anos, `;
@@ -375,11 +381,10 @@
   setInterval(showNextMessage, 5000);
   showNextMessage();
 
-  // --- ÁUDIO ---
   window.addEventListener("load", () => {
     const audio = document.getElementById("loveAudio");
     audio.play().catch(err => {
-      console.log("Autoplay bloqueado pelo navegador. O áudio tocará após a primeira interação.");
+      console.log("Autoplay bloqueado pelo navegador.");
     });
   });
 
