@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Especial Dia dos Namorados 💘</title>
   
-  <!-- Importando fontes mais bonitas e modernas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* Reset básico */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -47,7 +45,6 @@
       margin-top: 20px;
     }
 
-    /* Carrossel Responsivo */
     .carousel-container {
       display: flex;
       align-items: center;
@@ -61,8 +58,7 @@
     .carousel {
       width: 100%;
       max-width: 500px;
-      aspect-ratio: 4 / 5; /* Mantém a proporção da foto */
-      overflow: hidden;
+      aspect-ratio: 4 / 5;
       border-radius: 20px;
       border: 4px solid #ff85a2;
       box-shadow: 0 8px 24px rgba(255, 133, 162, 0.4);
@@ -70,17 +66,27 @@
       position: relative;
     }
 
+    /* Alteração para o efeito Fade */
     .carousel-images {
-      display: flex;
-      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      width: 100%;
       height: 100%;
     }
 
     .carousel-images img {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover; /* Evita que a imagem distorça */
-      flex-shrink: 0;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease-in-out; /* Transição suave de opacidade */
+      border-radius: 16px; /* Borda interna para não vazar o container */
+    }
+
+    .carousel-images img.active {
+      opacity: 1; /* Apenas a imagem ativa fica visível */
     }
 
     .side-button {
@@ -97,6 +103,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 10; /* Garante que o botão fique acima das imagens */
     }
 
     .side-button:hover {
@@ -154,7 +161,6 @@
       opacity: 1;
     }
 
-    /* Ajustes para telas bem pequenas */
     @media (max-width: 480px) {
       .side-button {
         width: 40px;
@@ -174,19 +180,8 @@
     <button class="side-button" onclick="prevImage()" aria-label="Imagem anterior">⬅</button>
 
     <div class="carousel">
-      <div class="carousel-images" id="carouselImages">
-        <img src="images/image1.jpg" alt="Momento especial 1">
-        <img src="images/image2.jpg" alt="Momento especial 2">
-        <img src="images/image3.jpg" alt="Momento especial 3">
-        <img src="images/image4.jpg" alt="Momento especial 4">
-        <img src="images/image5.jpg" alt="Momento especial 5">
-        <img src="images/image6.jpg" alt="Momento especial 6">
-        <img src="images/image7.jpg" alt="Momento especial 7">
-        <img src="images/image8.jpg" alt="Momento especial 8">
-        <img src="images/image9.jpg" alt="Momento especial 9">
-        <img src="images/image10.jpg" alt="Momento especial 10">
-        <img src="images/image11.jpg" alt="Momento especial 11">
-      </div>
+      <!-- O container agora está vazio no HTML. O JS vai injetar as imagens aqui -->
+      <div class="carousel-images" id="carouselImages"></div>
     </div>
 
     <button class="side-button" onclick="nextImage()" aria-label="Próxima imagem">➡</button>
@@ -205,24 +200,69 @@
   <div class="hearts">💕 💞 💖 💗 💘</div>
 
   <script>
-  // Carrossel
+  // --- CARREGAMENTO DINÂMICO DE IMAGENS E CARROSSEL COM FADE ---
+
+  // Defina aqui a quantidade total de imagens que você tem na pasta
+  // O código espera que os nomes sejam sequenciais: image1.jpg, image2.jpg...
+  const NUMERO_DE_IMAGENS = 15; 
+  const imagesContainer = document.getElementById("carouselImages");
+  
   let index = 0;
-  const images = document.getElementById("carouselImages");
-  const totalImages = images.children.length;
+  let imgElements = []; // Array para guardar as tags <img>
   let autoplayInterval;
 
+  // Função para injetar as imagens dinamicamente no HTML
+  function loadImages() {
+    for (let i = 1; i <= NUMERO_DE_IMAGENS; i++) {
+      const img = document.createElement("img");
+      img.src = `images/image${i}.jpg`;
+      img.alt = `Momento especial ${i}`;
+      
+      // Se for a primeira imagem, já adiciona a classe 'active' para ela aparecer logo de cara
+      if (i === 1) {
+        img.classList.add("active");
+      }
+      
+      // Se der erro ao carregar uma imagem (por exemplo, se você colocar 15 na variável mas só tiver 12 na pasta),
+      // essa imagem será ignorada silenciosamente e não quebrará o carrossel.
+      img.onerror = function() {
+        console.warn(`Imagem ${this.src} não encontrada. Ignorando.`);
+        // Remove a imagem com erro do array e do DOM
+        imgElements = imgElements.filter(el => el !== this);
+        this.remove();
+        // Se a imagem com erro era a ativa (muito improvável, mas...), força a atualização
+        if(this.classList.contains('active') && imgElements.length > 0) {
+            index = 0;
+            imgElements[0].classList.add('active');
+        }
+      };
+
+      imagesContainer.appendChild(img);
+      imgElements.push(img);
+    }
+  }
+
+  // Função que controla a troca de imagens (o efeito Fade)
   function updateCarousel() {
-    images.style.transform = `translateX(-${index * 100}%)`;
+    if (imgElements.length === 0) return; // Proteção caso não tenha imagens
+
+    // Remove a classe 'active' de todas as imagens (esconde todas)
+    imgElements.forEach(img => img.classList.remove("active"));
+    
+    // Adiciona a classe 'active' apenas na imagem atual (mostra ela)
+    imgElements[index].classList.add("active");
   }
 
   function nextImage() {
-    index = (index + 1) % totalImages;
+    if (imgElements.length === 0) return;
+    index = (index + 1) % imgElements.length; // Usa o length do array dinâmico
     updateCarousel();
     startCarouselAutoplay(); 
   }
 
   function prevImage() {
-    index = (index - 1 + totalImages) % totalImages;
+    if (imgElements.length === 0) return;
+    index = (index - 1 + imgElements.length) % imgElements.length;
     updateCarousel();
     startCarouselAutoplay(); 
   }
@@ -230,14 +270,18 @@
   function startCarouselAutoplay() {
     clearInterval(autoplayInterval);
     autoplayInterval = setInterval(() => {
-      index = (index + 1) % totalImages;
-      updateCarousel();
+      if (imgElements.length > 0) {
+        index = (index + 1) % imgElements.length;
+        updateCarousel();
+      }
     }, 4000);
   }
 
+  // Inicializa as imagens e o timer
+  loadImages();
   startCarouselAutoplay();
 
-  // Contador
+  // --- CONTADOR ---
   function updateElapsedTime() {
     const startTime = new Date('2025-05-20T19:30:00');
     const now = new Date();
@@ -248,7 +292,6 @@
     const minutes = Math.floor((diffMs / 1000 / 60) % 60);
     const seconds = Math.floor((diffMs / 1000) % 60);
 
-    // Formatação para sempre exibir dois dígitos (ex: 04 em vez de 4)
     const formattedHours = String(hours).padStart(2, '0');
     const formattedMinutes = String(minutes).padStart(2, '0');
     const formattedSeconds = String(seconds).padStart(2, '0');
@@ -260,7 +303,7 @@
   setInterval(updateElapsedTime, 1000);
   updateElapsedTime();
 
-  // Frases Românticas
+  // --- FRASES ROMÂNTICAS ---
   const messages = [
     "Você é meu lugar favorito no mundo.",
     "Cada segundo ao seu lado vale mais que mil vidas.",
@@ -279,13 +322,13 @@
       messageEl.innerText = messages[messageIndex];
       messageEl.classList.add('visible');
       messageIndex = (messageIndex + 1) % messages.length;
-    }, 500); // Sincronizado com a transição do CSS
+    }, 500);
   }
 
   setInterval(showNextMessage, 5000);
   showNextMessage();
 
-  // Tratamento do Áudio
+  // --- ÁUDIO ---
   window.addEventListener("load", () => {
     const audio = document.getElementById("loveAudio");
     audio.play().catch(err => {
