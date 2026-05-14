@@ -202,35 +202,59 @@
   <script>
   // --- CARREGAMENTO DINÂMICO DE IMAGENS E CARROSSEL COM FADE ---
 
-  // Defina aqui a quantidade total de imagens que você tem na pasta
-  // O código espera que os nomes sejam sequenciais: image1.jpg, image2.jpg...
-  const NUMERO_DE_IMAGENS = 15; 
+  // Lista com os nomes exatos dos arquivos da sua pasta
+  const fileNames = [
+    "20260102_161652.jpg",
+    "20260125_170953.jpg",
+    "20260217_120749.jpg",
+    "20260502_150943.jpg",
+    "IMG-20250831-WA0092.jpg",
+    "IMG-20250831-WA0165.jpg",
+    "IMG-20250930-WA0025.jpg",
+    "IMG-20250930-WA0117.jpg",
+    "IMG-20251201-WA0498.jpg",
+    "IMG-20260109-WA0059.jpg",
+    "IMG-20260109-WA0104.jpg",
+    "RAG259037 (1).jpg",
+    "ZFA25CRDF1507.jpg",
+    "_mg_0955.jpg",
+    "image1.jpg",
+    "image2.jpg",
+    "image3.jpg",
+    "image4.jpg",
+    "image5.jpg",
+    "image6.jpg",
+    "image7.jpg",
+    "image8.jpg",
+    "image9.jpg",
+    "image10.jpg",
+    "image11.jpg"
+  ];
+  
   const imagesContainer = document.getElementById("carouselImages");
   
   let index = 0;
   let imgElements = []; // Array para guardar as tags <img>
   let autoplayInterval;
 
-  // Função para injetar as imagens dinamicamente no HTML
+  // Função para injetar as imagens dinamicamente baseada na lista
   function loadImages() {
-    for (let i = 1; i <= NUMERO_DE_IMAGENS; i++) {
+    fileNames.forEach((fileName, i) => {
       const img = document.createElement("img");
-      img.src = `images/image${i}.jpg`;
-      img.alt = `Momento especial ${i}`;
+      // Monta o caminho correto: "images/nome-do-arquivo.jpg"
+      img.src = `images/${fileName}`;
+      img.alt = `Momento especial ${i + 1}`;
       
-      // Se for a primeira imagem, já adiciona a classe 'active' para ela aparecer logo de cara
-      if (i === 1) {
+      // A primeira imagem ganha a classe active
+      if (i === 0) {
         img.classList.add("active");
       }
       
-      // Se der erro ao carregar uma imagem (por exemplo, se você colocar 15 na variável mas só tiver 12 na pasta),
-      // essa imagem será ignorada silenciosamente e não quebrará o carrossel.
+      // Tratamento de erro continua caso você digite algum nome errado na lista acima
       img.onerror = function() {
         console.warn(`Imagem ${this.src} não encontrada. Ignorando.`);
-        // Remove a imagem com erro do array e do DOM
         imgElements = imgElements.filter(el => el !== this);
         this.remove();
-        // Se a imagem com erro era a ativa (muito improvável, mas...), força a atualização
         if(this.classList.contains('active') && imgElements.length > 0) {
             index = 0;
             imgElements[0].classList.add('active');
@@ -239,7 +263,7 @@
 
       imagesContainer.appendChild(img);
       imgElements.push(img);
-    }
+    });
   }
 
   // Função que controla a troca de imagens (o efeito Fade)
